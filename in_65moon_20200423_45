@@ -1,0 +1,341 @@
+# specify output files, use Citcom_test_TG.c under bin
+datadir="./D150v1e-4V1e21H50_20200423_45" #revised edition
+#datafile="m14" ##
+
+output_format=vtk
+write_q_files=20
+use_cbf_topo=1
+#output_format=hdf5
+output_optional=horiz_avg,comp_nd,tracer,field,surf
+checkpointFrequency=1000 ##
+output_ll_max=20 # for geoid output
+nlong=361       nlati=181
+
+# specify input files
+# Important: when file_vbcs is 1, make sure topvbc is also turned on.
+file_vbcs=0
+vel_bound_file="velbc/velbc_full"
+
+coor=3
+coor_file=""
+#r_grid_layers=4 ##
+#rr=0.23,0.262,0.968,1.0
+#nr=1,5,45,49
+#rr=0.1954,0.2241,0.8994,1.0 ##
+#nr=1,3,40,65 ##
+
+mat_control=0
+mat_file=""
+
+lith_age=0
+lith_age_file=""
+
+# processors, mesh grid information
+nproc_surf=12
+nprocx=2
+nprocy=2
+nprocz=2
+#mgunitx=4 ##
+#mgunity=4 
+#mgunitz=4 
+levels=4
+#nodex=65 ##
+#nodey=65 
+#nodez=65 
+
+# the calculation region definition
+radius_inner=0.1954
+radius_outer=1.0
+
+
+# restart info
+restart=off     #restart zwb
+post_p=0
+datadir_old=".//D50v1e-3V1e21H50_20200402"   #restart zwb
+datafile_old="a"    #restart zwb 
+solution_cycles_init=6000    
+zero_elapsed_time=0
+
+
+# timestepping information
+minstep=0
+maxstep=30001
+maxtotstep=30001
+storage_spacing=100
+cpu_limits_in_seconds=360000000
+
+# Initial conditions
+num_perturbations=1
+#tic_method=-1
+#read_T_bin=1
+perturbmag=0.01 #test
+perturbl=3
+perturbm=1     #zwb 0423
+perturblayer=30
+
+#Tinterior=0.8 #1600
+#bound_Ttop=0.95 #300km
+#bound_Tbot=0.246
+#GA_depth=1
+#GA_top=1.0
+#GA_CMB=0.525  #0.84/1.6
+
+# Boundary Conditions
+topvbc=0
+     topvbxval=0.0
+     topvbyval=0.0
+botvbc=0
+     botvbxval=0.0
+     botvbyval=0.0
+
+toptbc=1
+     toptbcval=0.0
+bottbc=1
+     bottbcval=1.0
+
+lith_age_time=0
+lith_age_depth=0.031400
+mantle_temp=0.5
+temperature_bound_adj=0
+depth_bound_adj=0.157000
+width_bound_adj=0.087270
+half_space_age=60
+
+
+# miscellaneous information
+stokes_flow_only=0
+inputdiffusicity=1.0
+#rayleigh=1.1e6   #2.84e7    
+Q0=36.0 ##
+surfaceT=0.21
+
+# required information
+Problem=convection
+Geometry=sphere
+#Spacing=regular
+Solver=multigrid
+node_assemble=1
+
+
+# Depth Information
+# for material above z_lith,    mat = 1;
+# for material above z_410,     mat = 2;
+# for material above z_lmantle, mat = 3;
+# for material below z_lmantle, mat = 4;
+#z_lith=0.05747              #70km ##
+z_410=0.172414			#also depth of 410-phase change 300km
+z_lmantle=0.555513		#also depth of 670-phase change
+z_cmb=0.70			#     depth of another phase change
+
+
+# Viscosity Information
+Viscosity=system
+#rheol=3
+visc_smooth_method=1
+
+VISC_UPDATE=on
+num_mat=4
+
+#TDEPV=off 
+#viscE=7.08,7.08,7.08,7.08 #E/(R*deltaT)=200e3/(8.31*1700) 
+#viscT=.1605,.1605,.1605,.1605 #273/1700
+visc0=1.0,1.0,1.0,1.0
+
+SDEPV=off
+sdepv_expt=1,1,1,1
+sdepv_misfit=0.020
+
+CDEPV=on
+#cdepv_ff=1,0.00005 ##
+
+low_visc_channel=off
+low_visc_wedge=off
+lv_min_radius=0.9764
+lv_max_radius=0.9921
+lv_channel_thickness=0.0047
+lv_reduction=0.5
+
+VMIN=on
+visc_min=1e-5 #T=1.0=>
+VMAX=on
+visc_max=1e4  #updated every step 
+
+#visc_T_ref=0.76 #1300/1700=0.76
+visc_range=1e5 #only works for rheol=3
+# Tracer information
+tracer=on
+#itracer_warnings=on
+tracer_ic_method=0
+tracers_per_element=100  #zwb 0402
+tracer_file=""
+
+tracer_flavors=2   #zwb 
+ic_method_for_flavors=0
+flavor_method=0   # zwb 
+#super_cont_datafile="block4.dat"
+#z_interface=0.8994 ##
+
+#tracer_enriched=1
+#Q0_enriched=88.7
+
+regular_grid_deltheta=1
+regular_grid_delphi=1
+
+chemical_buoyancy=on
+buoy_type=1
+#buoyancy_ratio=0.66 ##
+#reset_initial_composition=on
+
+
+# Phase Change Information
+Ra_410=0.0
+clapeyron410=0.0235
+transT410=0.78
+width410=0.0058
+
+Ra_670=0.0
+clapeyron670=-0.0235
+transT670=0.875
+width670=0.0058
+
+Ra_cmb=0.0
+clapeyroncmb=-0.0235
+transTcmb=0.875
+widthcmb=0.0058
+
+
+# Dimensional Information
+radius=1740e3
+density=3400.0
+thermdiff=1.0e-6
+gravacc=1.63
+thermexp=2.3e-5 # from Li 2019
+reftemperature=1660
+surftemperature=223.15
+#refvisc=1.0e21
+cp=1000            # from Li 2019, cp=1000/1250
+density_above=0.0
+density_below=8000.0
+
+
+# Impact Related
+impactadded=on
+impactDc=20e3
+impactC=7.7e3
+impactS=1.25
+
+
+
+# Data input and program debugging
+DESCRIBE=off
+BEGINNER=off
+VERBOSE=off
+
+verbose=off
+see_convergence=1
+
+
+# Solver Related Matters
+uzawa=cg
+mg_cycle=1
+down_heavy=3
+up_heavy=3
+vlowstep=1000
+vhighstep=3
+
+piterations=375
+accuracy=5.0e-3
+tole_compressibility=1.0e-8
+compress_iter_maxstep=100
+relative_err_accuracy=0.001
+
+ADV=on
+fixed_timestep=0
+finetunedt=0.15
+adv_sub_iterations=2
+adv_gamma=0.5
+monitor_max_T=on
+T_interior_max_for_exit=5
+
+precond=on
+aug_lagr=on
+aug_number=2.0e3
+
+remove_rigid_rotation=off
+
+# Age information
+start_age=0.0
+reset_startage=1
+
+#--mantle_melting--#
+melting_model=4
+#latent_method=2
+melt_latent_heating=2
+MF_save_step=100
+latent_heat=6e5
+water=0.01 #for melting_model=2,3
+Mcpx=0.15
+fertility=1
+#sol_liq=1
+#sol_liq_dir="/home/wenbozhang/wenbozhang/samplecase_zwb/50km/hot/Reg"
+sol_liq_dir="./50km/hot/Reg"
+sol_liq_file="solidus_liquidus"
+
+
+# updata_cmb_T
+coreT_method=1
+#inner_core_latent=0
+#cnr=50
+cpc=1000.0
+Lc=3e5
+inner_core_radius=0.0 #change when restart
+Tcmb=1.0 #change when restart
+core_liquidus_file="core_liquidus"  #maybe not right  zwb 20191130
+
+#background_profile=1
+#background_profile_file="Reverse_Solidus_New.dat"
+#model specified parameters
+datafile="a"
+#background_profile_file="/home/wenbozhang/wenbozhang/samplecase_zwb/mg_suite_init/Reg/T_profile"    #maybe not right by zwb 20191130
+background_profile_file="./50km/hot/Reg/T_profileNone"
+model_type=0 #zwb 
+tic_method=-1
+mgunitx=4
+mgunity=4
+mgunitz=4
+nodex=65
+nodey=65
+nodez=65
+r_grid_layers=5
+nr=1,6,52,61,65   #zwb 0423
+rr=1.9540e-01,2.2410e-01,8.8793e-01,9.7744e-01,1.0000e+00 #zwb 0423
+z_lith=2.5862e-02
+z_interface=8.8793e-01 #zwb 0423
+rheol=3
+cdepv_ff=1.0000e+00,1.0000e-4 #zwb 0419
+TDEPV=on
+refvisc=1.0000e+21
+rayleigh=1.1147e6 #Li 2019
+viscE=7.2492e+00,7.2492e+00,7.2492e+00,7.2492e+00
+viscT=1.3443e-01,1.3443e-01,1.3443e-01,1.3443e-01
+visc_T_ref=8.1325e-01
+sol_liq=1
+#latent_method=2
+inner_core_latent=1
+cnr=50
+coreS=1.0000e-01
+isotope_n=4 #if this is bigger than 0, then calculate Q with every isotope #zwb 20191214
+isotope_t=-4.6039e-02
+#isotope_Q=1.0297e-01,2.3938e+00,2.2142e-01,2.6915e+00
+#isotope_Q=1.2444e-01,2.8929e+00,2.6759e-01,3.2527e+00
+isotope_Q=1.2589e-01,2.9236e+00,3.4981e-01,3.2907e+00 #Li 2019 cp =1000
+isotope_lambda=9.4525e+01,1.4887e+01,5.3236e+01,4.7532e+00 
+tracer_enriched=1
+enriched_flavor=1  #zwb
+#Q0_enriched=1.1763e+00,2.7346e+01,2.5293e+00,3.0747e+01
+#Q0_enriched=4.1634e-01,9.6788e+00,8.9522e-01,1.0883e+01
+Q0_enriched=3.8192e-01,8.8695e+00,1.0612e+00,9.9832e+00 #Li 2019 cp =1000
+smooth_lower_half=1
+lower_interface=0.5977
+buoyancy_from_ic_thickness=1
+#buoyancy_ratio=0
