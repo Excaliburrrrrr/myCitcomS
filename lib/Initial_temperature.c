@@ -274,7 +274,8 @@ void convection_initial_temperature(struct All_variables *E)
 #endif
 		  read_temp_from_radial(E);
  //         read_tic_from_file(E);
-  }
+  		add_perturbations_at_layers(E);  //zwb 0515
+	}
   else if (E->convection.tic_method == -2) {
       /* read temperature from file */
 	  
