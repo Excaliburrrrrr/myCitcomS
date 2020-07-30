@@ -1440,8 +1440,8 @@ static void lunar_read_parametes(struct All_variables *E){
 	input_int("buoyancy_from_ic_thickness",&(E->lunar.bfit),"0",m);
 	input_int("smooth_lower_half",&(E->lunar.smooth_lower_half),"0",m);
 	input_double("lower_interface",&(E->lunar.lower_interface),"0.5977",m);
-    input_int("smooth_upper_layer",&(E->lunar.smooth_upper_layer),"0",m);
-	input_double("upper_interface",&(E->lunar.upper_interface),"0.9529",m);
+    input_int("smooth_upper_layer",&(E->lunar.smooth_upper_layer),"0",m);       //zwb 20200715
+	input_double("upper_interface",&(E->lunar.upper_interface),"0.9529",m);         //zwb 20200715
 	if(m==0){
 		if(E->lunar.model_type == 1){
 			fprintf(stderr,"start a mg-suite model\n");

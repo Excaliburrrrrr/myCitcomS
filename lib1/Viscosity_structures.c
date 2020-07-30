@@ -1158,7 +1158,7 @@ void visc_from_C( E, EEta)
 						CC[p][kk] = 0.0;
 					}
 }
-                 if(E->lunar.smooth_upper_layer){
+                 if(E->lunar.smooth_upper_layer){                                                                   //zwb 20200715
 					if(E->sx[1][3][E->ien[m][i].node[kk]]>E->lunar.upper_interface){
 						CC[p][kk] = 0.0;
 					}

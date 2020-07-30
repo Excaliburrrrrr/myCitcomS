@@ -780,8 +780,8 @@ struct LUNAR{
 	double latent_heat;
 	int smooth_lower_half;
 	double lower_interface;
-	int smooth_upper_layer;
-	double upper_interface;
+	int smooth_upper_layer;         //zwb 20200715
+	double upper_interface;          //zwb 20200715
 };
 
 #ifdef USE_HDF5
