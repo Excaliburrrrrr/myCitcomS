@@ -56,6 +56,7 @@ static void read_tic_from_file(struct All_variables *);
 static void read_tic_from_file_im(struct All_variables *);
 static void construct_tic_from_input(struct All_variables *);
 static void add_perturbations_at_all_layers(struct All_variables *);
+static void add_perturbations_at_layers(struct All_variables *);    //zwb 0515
 
 #ifdef USE_GZDIR
 void restart_tic_from_gzdir_file(struct All_variables *);
@@ -1434,6 +1435,7 @@ static void lunar_read_parametes(struct All_variables *E){
 	int input_int();
 	int input_double();
 	int m = E->parallel.me;
+	int i;                                                                                                             //zwb 20200730
 	input_int("model_type",&(E->lunar.model_type),"0",m);
 	input_int("latent_method",&(E->lunar.latent_method),"0",m);
 	input_double("latent_heat",&(E->lunar.latent_heat),"6e5",m);
