@@ -1443,7 +1443,11 @@ static void lunar_read_parametes(struct All_variables *E){
     input_int("smooth_upper_layer",&(E->lunar.smooth_upper_layer),"0",m);       //zwb 20200715
 	input_double("upper_interface",&(E->lunar.upper_interface),"0.9529",m);         //zwb 20200715
 	input_int("smooth_downwelling",&(E->lunar.smooth_downwelling),"0",m);       //zwb 20200730
+    for(i=0;i<10;i++)
+        E->lunar.smooth_cdepv[i] =1.0;                                                                                          //zwb 20200730
     input_float_vector("smooth_cdepv",E->trace.nflavors, (E->lunar.smooth_cdepv),m);        //zwb 20200730
+    for(i=0;i<E->trace.nflavors;i++)
+        E->lunar.smooth_cdepv[i] = log(E->lunar.smooth_cdepv[i]);       //zwb 20200730
 	if(m==0){
 		if(E->lunar.model_type == 1){
 			fprintf(stderr,"start a mg-suite model\n");
