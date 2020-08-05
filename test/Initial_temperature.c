@@ -56,7 +56,6 @@ static void read_tic_from_file(struct All_variables *);
 static void read_tic_from_file_im(struct All_variables *);
 static void construct_tic_from_input(struct All_variables *);
 static void add_perturbations_at_all_layers(struct All_variables *);
-static void add_perturbations_at_layers(struct All_variables *);    //zwb 0515
 
 #ifdef USE_GZDIR
 void restart_tic_from_gzdir_file(struct All_variables *);
@@ -1435,7 +1434,6 @@ static void lunar_read_parametes(struct All_variables *E){
 	int input_int();
 	int input_double();
 	int m = E->parallel.me;
-	int i;                                                                                                             //zwb 20200730
 	input_int("model_type",&(E->lunar.model_type),"0",m);
 	input_int("latent_method",&(E->lunar.latent_method),"0",m);
 	input_double("latent_heat",&(E->lunar.latent_heat),"6e5",m);
@@ -1444,18 +1442,6 @@ static void lunar_read_parametes(struct All_variables *E){
 	input_double("lower_interface",&(E->lunar.lower_interface),"0.5977",m);
     input_int("smooth_upper_layer",&(E->lunar.smooth_upper_layer),"0",m);       //zwb 20200715
 	input_double("upper_interface",&(E->lunar.upper_interface),"0.9529",m);         //zwb 20200715
-    for(i=0;i<10;i++)
-    {
-        E->lunar.upper_cdepv[i] =1.0;                                                                                          //zwb 20200804
-        E->lunar.lower_cdepv[i] =1.0;
-    }
-    input_float_vector("upper_cdepv",E->trace.nflavors, (E->lunar.upper_cdepv),m);        //zwb 20200804
-    input_float_vector("lower_cdepv",E->trace.nflavors, (E->lunar.lower_cdepv),m);        //zwb 20200804
-    for(i=0;i<E->trace.nflavors;i++)
-        {
-            E->lunar.upper_cdepv[i] = log(E->lunar.upper_cdepv[i]);       //zwb 20200804
-            E->lunar.lower_cdepv[i] = log(E->lunar.lower_cdepv[i]);       //zwb 20200804
-        }
 	if(m==0){
 		if(E->lunar.model_type == 1){
 			fprintf(stderr,"start a mg-suite model\n");

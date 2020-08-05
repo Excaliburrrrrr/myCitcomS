@@ -1138,13 +1138,11 @@ void visc_from_C( E, EEta)
   const int nel = E->lmesh.nel;
   const int ends = enodes[E->mesh.nsd];
   int Is0 = (E->parallel.me==0);
-  /*
+
   if(Is0){//debug
 	  fprintf(stderr,"visc_from_C begin\n");
 	  fprintf(stderr,"smooth_upper_layer = %d, upper_interface = %.4e\n",E->lunar.smooth_upper_layer, E->lunar.upper_interface);
-	  fprintf(stderr,);
   }
-*/
 
   for(m=1;m <= E->sphere.caps_per_proc;m++)  {
     for(i = 1; i <= nel; i++){
@@ -1155,6 +1153,16 @@ void visc_from_C( E, EEta)
                 CC[p][kk] = E->composition.comp_node[m][p][E->ien[m][i].node[kk]];
                 if(CC[p][kk] < 0)CC[p][kk]=0.0;
                 if(CC[p][kk] > 1)CC[p][kk]=1.0;
+				if(E->lunar.smooth_lower_half){
+					if(E->sx[1][3][E->ien[m][i].node[kk]]<E->lunar.lower_interface){
+						CC[p][kk] = 0.0;
+					}
+}
+                 if(E->lunar.smooth_upper_layer){                                                                   //zwb 20200715
+					if(E->sx[1][3][E->ien[m][i].node[kk]]>E->lunar.upper_interface){
+						CC[p][kk] = 0.0;
+					}
+				}
 				/*if(Is0&&(i==1)){//debug
 					fprintf(stderr,"ele = %d, p = %d, node = %d, CC = %.4e\n",i,p,kk,CC[p][kk]);
 				}*/
@@ -1174,20 +1182,8 @@ void visc_from_C( E, EEta)
 
             /* geometric mean of viscosity */
             vmean = cbackground * E->viscosity.cdepv_ff[0];
-            if(E->lunar.smooth_upper_layer ==1 && (E->sx[1][3][E->ien[m][i].node[1]]+E->sx[1][3][E->ien[m][i].node[5]])/2.0 >=E->lunar.upper_interface){                                //zwb 20200804
-                for(p=0; p<E->composition.ncomp; p++) {
-                    vmean += cc_loc[p] * E->lunar.upper_cdepv[p+1];
-                }
-            }
-            else if(E->lunar.smooth_lower_half ==1 && (E->sx[1][3][E->ien[m][i].node[1]]+E->sx[1][3][E->ien[m][i].node[5]])/2.0 <=E->lunar.lower_interface){                      //zwb 20200804
-                for(p=0; p<E->composition.ncomp; p++) {
-                    vmean += cc_loc[p] * E->lunar.lower_cdepv[p+1];
-                }
-            }
-            else{
-                for(p=0; p<E->composition.ncomp; p++) {
-                    vmean += cc_loc[p] * E->viscosity.cdepv_ff[p+1];
-                }
+            for(p=0; p<E->composition.ncomp; p++) {
+                vmean += cc_loc[p] * E->viscosity.cdepv_ff[p+1];
             }
             vmean = exp(vmean);
 
