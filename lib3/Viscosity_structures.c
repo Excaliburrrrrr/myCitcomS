@@ -1138,12 +1138,13 @@ void visc_from_C( E, EEta)
   const int nel = E->lmesh.nel;
   const int ends = enodes[E->mesh.nsd];
   int Is0 = (E->parallel.me==0);
-
+  /*
   if(Is0){//debug
 	  fprintf(stderr,"visc_from_C begin\n");
 	  fprintf(stderr,"smooth_upper_layer = %d, upper_interface = %.4e\n",E->lunar.smooth_upper_layer, E->lunar.upper_interface);
 	  fprintf(stderr,);
   }
+*/
 
   for(m=1;m <= E->sphere.caps_per_proc;m++)  {
     for(i = 1; i <= nel; i++){
@@ -1178,7 +1179,7 @@ void visc_from_C( E, EEta)
                     vmean += cc_loc[p] * E->lunar.upper_cdepv[p+1];
                 }
             }
-            else if(E->lunar.smooth_lower_layer ==1 && (E->sx[1][3][E->ien[m][i].node[1]]+E->sx[1][3][E->ien[m][i].node[5]])/2.0 <=E->lunar.lower_interface){                      //zwb 20200804
+            else if(E->lunar.smooth_lower_half ==1 && (E->sx[1][3][E->ien[m][i].node[1]]+E->sx[1][3][E->ien[m][i].node[5]])/2.0 <=E->lunar.lower_interface){                      //zwb 20200804
                 for(p=0; p<E->composition.ncomp; p++) {
                     vmean += cc_loc[p] * E->lunar.lower_cdepv[p+1];
                 }
