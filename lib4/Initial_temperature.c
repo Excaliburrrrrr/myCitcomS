@@ -1369,11 +1369,28 @@ static void all_chemicals(struct All_variables *E){
 		E->chemical.frac[nflavors - 1][6] = 1.0;
 	}
 	// derive chemical buoyancy
+	if(E->lunar.model_type ==3){                              //zwb 20200819, used in upwelling ic along with flavor_method=3
+        E->chemical.interface[1][1] =E->trace.z_interface[1];
+        E->chemical.interface[1][2] =1.0 -E->viscosity.zlith;
+        E->chemical.interface[2][1] =E->sphere.ri;
+        E->chemical.interface[2][2] =E->trace.z_interface[0];
+	}
 	for(i=0;i<E->trace.nflavors;i++){
 		/*derive chemical buoyancy*/
 		E->chemical.buoyancy[i] = 0.0;
-		for(j=1;j<=E->mineral.num;j++){
-			E->chemical.buoyancy[i] += E->chemical.frac[i][j]*E->mineral.buoyancy[j];
+		if(E->lunar.model_type ==3){                          //zwb 20200819
+            E->chemical.frac[1][2] =ibc_layer(E,E->lunar.init_zinterface);
+            E->chemical.frac[1][3] =E->chemical.frac[1][2]*(1-0.11)/0.11;
+            E->chemical.frac[1][1] =1.0 -E->chemical.frac[1][2]-E->chemical.frac[1][3];
+            for(j=1;j<=3;j++){
+                E->chemical.buoyancy[1] +=E->chemical.frac[1][j]*E->mineral.buoyancy[j];
+            }
+            E->chemical.buoyancy[2] =E->lunar.mixed_fraction*E->chemical.buoyancy[1];
+		}
+		else{
+            for(j=1;j<=E->mineral.num;j++){
+                E->chemical.buoyancy[i] += E->chemical.frac[i][j]*E->mineral.buoyancy[j];
+            }
 		}
 	}
 }
@@ -1444,6 +1461,9 @@ static void lunar_read_parametes(struct All_variables *E){
 	input_double("lower_interface",&(E->lunar.lower_interface),"0.5977",m);
     input_int("smooth_upper_layer",&(E->lunar.smooth_upper_layer),"0",m);       //zwb 20200715
 	input_double("upper_interface",&(E->lunar.upper_interface),"0.9529",m);         //zwb 20200715
+	input_double("init_zinterface", &(E->lunar.init_zinterface), "8.8793e-01",m);    //zwb 20200819
+	input_double("dropped_fraction", &(E->lunar.dropped_fraction), "0.4700",m); //zwb 20200819
+	input_double("mixed_fraction", &(E->lunar.mixed_fraction), "0.0",m);                   //zwb 20200819
     for(i=0;i<10;i++)
     {
         E->lunar.upper_cdepv[i] =1.0;                                                                                          //zwb 20200804

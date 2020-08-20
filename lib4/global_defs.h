@@ -784,6 +784,9 @@ struct LUNAR{
 	int smooth_upper_layer;         //zwb 20200715
 	double upper_interface;          //zwb 20200715
 	float upper_cdepv[10];              //zwb 20200804
+    double init_zinterface;              //zwb 20200819
+    double dropped_fraction;        //zwb 20200819
+    double mixed_fraction;              //zwb 20200819
 };
 
 #ifdef USE_HDF5
