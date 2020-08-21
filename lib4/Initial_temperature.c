@@ -1359,7 +1359,7 @@ static void all_chemicals(struct All_variables *E){
 	E->chemical.interface[i][1] = E->trace.z_interface[i-1]-0.3*thick;
 	E->chemical.interface[i][2] = 1.0-E->viscosity.zlith+0.1*thick;
 	/*crust*/
-	if(E->lunar.model_type>0){ //only in mg-suite model
+	if(E->lunar.model_type ==1){ //only in mg-suite model  //zwb 20200820
 		E->chemical.frac[3][4] = 1.0;
 		E->chemical.interface[3][1] = 1.0-E->viscosity.zlith+0.1*thick;
 		E->chemical.interface[3][2] = 1.0;
@@ -1374,25 +1374,29 @@ static void all_chemicals(struct All_variables *E){
         E->chemical.interface[1][2] =1.0 -E->viscosity.zlith;
         E->chemical.interface[2][1] =E->sphere.ri;
         E->chemical.interface[2][2] =E->trace.z_interface[0];
+        E->chemical.frac[1][2] =ibc_layer(E,E->lunar.init_zinterface);
+        E->chemical.frac[1][3] =E->chemical.frac[1][2]*(1-0.11)/0.11;
+        E->chemical.frac[1][1] =1.0 -E->chemical.frac[1][2]-E->chemical.frac[1][3];
 	}
-	for(i=0;i<E->trace.nflavors;i++){
-		/*derive chemical buoyancy*/
-		E->chemical.buoyancy[i] = 0.0;
-		if(E->lunar.model_type ==3){                          //zwb 20200819
-            E->chemical.frac[1][2] =ibc_layer(E,E->lunar.init_zinterface);
-            E->chemical.frac[1][3] =E->chemical.frac[1][2]*(1-0.11)/0.11;
-            E->chemical.frac[1][1] =1.0 -E->chemical.frac[1][2]-E->chemical.frac[1][3];
+
+		if(E->lunar.model_type ==3){                          //zwb 20200820
+            for(i=0;i<E->trace.nflavors;i++){
+                E->chemical.buoyancy[i] =0.0;
+            }
             for(j=1;j<=3;j++){
                 E->chemical.buoyancy[1] +=E->chemical.frac[1][j]*E->mineral.buoyancy[j];
             }
             E->chemical.buoyancy[2] =E->lunar.mixed_fraction*E->chemical.buoyancy[1];
 		}
 		else{
-            for(j=1;j<=E->mineral.num;j++){
-                E->chemical.buoyancy[i] += E->chemical.frac[i][j]*E->mineral.buoyancy[j];
+            for(i=0;i<E->trace.nflavors;i++){
+            /*derive chemical buoyancy*/
+                E->chemical.buoyancy[i] = 0.0;
+                for(j=1;j<=E->mineral.num;j++){
+                    E->chemical.buoyancy[i] += E->chemical.frac[i][j]*E->mineral.buoyancy[j];
+                }
             }
-		}
-	}
+        }
 }
 
 /*initialize model specified parameters*/
