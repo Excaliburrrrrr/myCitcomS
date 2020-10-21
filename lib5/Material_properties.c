@@ -101,13 +101,13 @@ void reference_state(struct All_variables *E)
     }
 
     if(E->parallel.me == 0) {
-      fprintf(stderr, "   nz     radius      depth    rho              layer  GA_Moon\n");  //zwb 20201021
+      fprintf(stderr, "   nz     radius      depth    rho              layer\n");
     }
     if(E->parallel.me < E->parallel.nprocz)
         for(i=1; i<=E->lmesh.noz; i++) {
-            fprintf(stderr, "%6d %11f %11f %11e %5i %g\n",
+            fprintf(stderr, "%6d %11f %11f %11e %5i\n",
                     i+E->lmesh.nzs-1, E->sx[1][3][i], 1-E->sx[1][3][i],
-                    E->refstate.rho[i],layers_r(E,E->sx[1][3][i]),E->Have.GA_Moon[i]);
+                    E->refstate.rho[i],layers_r(E,E->sx[1][3][i]));
         }
 
     return;
@@ -177,10 +177,7 @@ static void adams_williamson_eos(struct All_variables *E)
 	E->refstate.heat_capacity[i] = 1;
 	/*E->refstate.thermal_conductivity[i] = 1;*/
 	/*E->refstate.Tadi[i] = (E->control.adiabaticT0 + E->control.surface_temp) * exp(E->control.disptn_number * z) - E->control.surface_temp;*/
-  if(E->control.GA_depth==1)    //zwb 20201021
-      E->Have.GA_Moon[i] =E->control.GA_top-((E->sphere.ro-r)*(E->control.GA_top-E->control.GA_CMB)/(E->sphere.ro-E->sphere.ri));
-  else E->Have.GA_Moon[i] =1.0;
-  }
+    }
 
     return;
 }

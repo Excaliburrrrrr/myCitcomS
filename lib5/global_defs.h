@@ -367,7 +367,6 @@ struct HAVE {    /* horizontal averages */
     float *V[4];
     float *vis;
     float **C;
-    float *GA_Moon; //zwb 20201021
 };
 
 struct SLICE {    /* horizontally sliced data, including topography */
@@ -585,10 +584,6 @@ struct CONTROL {
 	float t_ic_sol;
 	int need_init_sol;
 	int output_area;
-
-  int GA_depth;        //zwb 20201021 gravitational acceleration variation
-  float GA_top;
-  float GA_CMB;
 };
 /*lhy update_cmb_T
  * core properties include cmb temperature and inner core radius

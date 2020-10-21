@@ -167,10 +167,10 @@ void get_buoyancy(struct All_variables *E, double **buoy)
         /* We don't need to substract adiabatic T profile from T here,
          * since the horizontal average of buoy will be removed.
          */
-        buoy[m][i] =  temp * E->refstate.rho[nz] *E->Have.GA_Moon[nz]     //zwb 20201021
+        buoy[m][i] =  temp * E->refstate.rho[nz]
 	  * E->refstate.thermal_expansivity[nz] * E->T[m][i];
       }
-
+    
     /* chemical buoyancy */
     if(E->control.tracer &&
        (E->composition.ichemical_buoyancy)) {
@@ -179,7 +179,7 @@ void get_buoyancy(struct All_variables *E, double **buoy)
 	temp2 = E->composition.buoyancy_ratio[j] * temp;
             for(m=1;m<=E->sphere.caps_per_proc;m++)
 	      for(i=1;i<=E->lmesh.nno;i++)
-		buoy[m][i] -= temp2 *E->Have.GA_Moon[nz] * E->composition.comp_node[m][j][i]; //zwb 20201021
+		buoy[m][i] -= temp2 * E->composition.comp_node[m][j][i];
       }
     }
 #ifdef USE_GGRD
@@ -192,12 +192,12 @@ void get_buoyancy(struct All_variables *E, double **buoy)
     phase_change_apply_670(E, buoy);
     phase_change_apply_cmb(E, buoy);
 
-    /*
-       convert density to buoyancy
+    /* 
+       convert density to buoyancy 
     */
 #ifdef ALLOW_ELLIPTICAL
     if(E->data.use_rotation_g){
-      /*
+      /* 
 
       rotational correction, the if should not add significant
       computational burden
@@ -229,11 +229,11 @@ void get_buoyancy(struct All_variables *E, double **buoy)
 	}
 #ifdef ALLOW_ELLIPTICAL
     }
-#endif
-
+#endif    
+    
 
     remove_horiz_ave2(E,buoy);
-
+    
     return;
 }
 
@@ -252,7 +252,7 @@ void tide_input(struct All_variables *E)
 		parallel_process_termination();
       }
 	}
-
+	
 	input_double("tidenum",&(E->tide.tidenum),"0.0602",m);
 	input_double("semia",&(E->tide.semia),"0.0",m);
 }
@@ -265,8 +265,8 @@ void get_tide(struct All_variables *E, double **tide)
     void remove_horiz_ave2(struct All_variables*, double**);
 	double modified_plgndr_a();
     //char filename[100];FILE *out;
-
-
+	
+	
 	if(E->parallel.me==0)
     	fprintf(stderr,"process tidal force\n"); //lhy debug
 	nxny = E->lmesh.nox*E->lmesh.noy;
@@ -284,11 +284,11 @@ void get_tide(struct All_variables *E, double **tide)
 		/*derive density*/
         rho = E->refstate.rho[nz];
     	if(E->control.tracer &&
-       	(E->composition.ichemical_buoyancy))
-      	for(j=0;j<E->composition.ncomp;j++)
+       	(E->composition.ichemical_buoyancy)) 
+      	for(j=0;j<E->composition.ncomp;j++) 
 		  rho += temp * E->composition.ncomp*E->composition.comp_node[m][j][i];
         rho *= 1-temp*E->T[m][i];
-		/*compute tide*/
+		/*compute tide*/	
 		for(tiden=0;tiden<E->tide.n;tiden++)
 		{
 		ll = E->tide.ll[tiden] + 1;
@@ -300,12 +300,12 @@ void get_tide(struct All_variables *E, double **tide)
         tide[m][i] +=  E->control.Atemp*E->tide.tidenum*rho
 		*pow(E->tide.semia,2-ll)*pow(E->sx[1][3][nz],ll-1)*fact*modified_plgndr_a(ll,1,theta);
 	  	}
-		if(E->parallel.me==0)
+		if(E->parallel.me==0)	
 			fprintf(stderr,"nno: %d, rayleigh: %.4e, plm: %.4e, rho: %.4e, tide: %.4e\n",i,E->control.Atemp,modified_plgndr_a(ll,1,theta),rho,tide[m][i]);// lhy debug
       }
-
+    
 	//remove_horiz_ave2(E,tide);
-
+    
     return;
 }
 
@@ -534,7 +534,7 @@ void calc_cbase_at_node(int cap, int node, float *base,struct All_variables *E)
   sp = E->SinCos[lev][cap][1][node];
   ct = E->SinCos[lev][cap][2][node];
   cp = E->SinCos[lev][cap][3][node];
-
+           
   /* r */
   base[0]= st * cp;
   base[1]= st * sp;
@@ -714,11 +714,11 @@ void normalize_vec3d(double *x, double *y, double *z)
   len = sqrt(len);
   *x /= len;*y /= len;*z /= len;
 }
-/*
+/* 
    C = A * B
 
    for 3x3 matrix
-
+   
 */
 void matmul_3x3(double a[3][3],double b[3][3],double c[3][3])
 {
