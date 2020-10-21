@@ -107,7 +107,7 @@ void reference_state(struct All_variables *E)
         for(i=1; i<=E->lmesh.noz; i++) {
             fprintf(stderr, "%6d %11f %11f %11e %5i %g\n",
                     i+E->lmesh.nzs-1, E->sx[1][3][i], 1-E->sx[1][3][i],
-                    E->refstate.rho[i],layers_r(E,E->sx[1][3][i]),,E->Have.GA_Moon[i]);
+                    E->refstate.rho[i],layers_r(E,E->sx[1][3][i]),E->Have.GA_Moon[i]);
         }
 
     return;
