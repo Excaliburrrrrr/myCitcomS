@@ -152,7 +152,7 @@ void initial_mesh_solver_setup(struct All_variables *E)
     if(chatty)fprintf(stderr,"v communications done\n");
 
     if(E->control.use_cbf_topo){
-      (E->solver.parallel_communication_routs_s)(E); 
+      (E->solver.parallel_communication_routs_s)(E);
       if(chatty)fprintf(stderr,"s communications done\n");
     }
     reference_state(E);
@@ -267,7 +267,7 @@ void initial_conditions(struct All_variables *E)
     void init_composition();
     void common_initial_fields();
 	int i;
-   	
+
 	if(E->parallel.me == 0){
 		for (i=0; i<E->composition.ncomp; i++){
 			fprintf(stderr,"buoyancy%d = %.4e\n",i,E->composition.buoyancy_ratio[i]);
@@ -344,8 +344,8 @@ void read_initial_settings(struct All_variables *E)
   input_string("datafile",E->control.data_prefix,"initialize",m);
   input_string("datadir_old",E->control.data_dir_old,".",m);
   input_string("datafile_old",E->control.data_prefix_old,"initialize",m);
-  input_string("background_profile_file",E->control.background_profile_file,"",m); 	
-  
+  input_string("background_profile_file",E->control.background_profile_file,"",m);
+
   input_string("sol_liq_dir",E->control.sol_liq_dir,"initialize",m);
   input_string("sol_liq_file",E->control.sol_liq_file,"initialize",m); //lhy solidus_liquidus
 
@@ -451,7 +451,9 @@ void read_initial_settings(struct All_variables *E)
   input_float("z_lmantle",&(E->viscosity.zlm),"0.103594412180191",m); /*0.10359441  */
   input_float("z_410",&(E->viscosity.z410),"0.0643541045361796",m); /* 0.06434, more like it */
   input_float("z_lith",&(E->viscosity.zlith),"0.0156961230576048",m); /* 0.0157, more like it */
-
+  input_int("GA_depth",&(E->control.GA_depth),"0",m); //zwb 20201021
+  input_float("GA_top",&(E->control.GA_top),"1.0",m);
+  input_float("GA_CMB",&(E->control.GA_CMB),"1.0",m);
 
   /* those are depth layers associated with viscosity or material
      jumps, they may or may not be identical with the phase changes */
@@ -471,7 +473,7 @@ void read_initial_settings(struct All_variables *E)
   input_int("botvbc",&(E->mesh.botvbc),"0",m);
 
 
-  /* 
+  /*
 
   internal boundary conditions
 
@@ -481,7 +483,7 @@ void read_initial_settings(struct All_variables *E)
 							    < 0: apply to single node layer noz+toplayerbc
 
 						       */
-  input_float("toplayerbc_r",&(E->mesh.toplayerbc_r),"0.984303876942",m); /* minimum r to apply BC to, 
+  input_float("toplayerbc_r",&(E->mesh.toplayerbc_r),"0.984303876942",m); /* minimum r to apply BC to,
 									     100 km depth */
 
 
@@ -526,14 +528,14 @@ void read_initial_settings(struct All_variables *E)
 #ifdef USE_GGRD
 
 
-  /* 
-     
+  /*
+
   note that this part of the code might override mat_control, file_vbcs,
-     
-  MATERIAL CONTROL 
+
+  MATERIAL CONTROL
 
      usage:
-     (a) 
+     (a)
 
      ggrd_mat_control=2
      ggrd_mat_file="weak.grd"
@@ -556,33 +558,33 @@ void read_initial_settings(struct All_variables *E)
      ggrd_time_hist_file which has time in Ma for n stages like so
 
      -->age is positive, and forward marching in time decreases the age<--
-     
+
      0 15
      15 30
      30 60
 
 
 
-     in the example above, the input grid is a layer. if it's a 3D model, provide 
+     in the example above, the input grid is a layer. if it's a 3D model, provide
      ggrd_mat_depth_file, akin to temperature input
-     
-     
+
+
   */
   ggrd_init_master(&E->control.ggrd);
   /* this is controlling velocities, material, and age */
   /* time history file, if not specified, will use constant VBCs and material grids */
   input_string("ggrd_time_hist_file",
-	       E->control.ggrd.time_hist.file,"",m); 
+	       E->control.ggrd.time_hist.file,"",m);
   /* if > 0, will use top  E->control.ggrd.mat_control layers and assign a prefactor for the viscosity */
   /* if < 0, will assign only to layer == -ggrd_mat_control */
-  input_int("ggrd_mat_control",&(E->control.ggrd.mat_control),"0",m); 
+  input_int("ggrd_mat_control",&(E->control.ggrd.mat_control),"0",m);
   input_boolean("ggrd_mat_limit_prefactor",&(E->control.ggrd_mat_limit_prefactor),"on",m); /* limit prefactor to with 1e+/-5 */
   input_int("ggrd_mat_is_code",&(E->control.ggrd_mat_is_code),"0",m); /* the viscosity grids are
 									   actually codes for
 									   different types of
 									   rheologies, from 1 .... cmax
-									   
-									   
+
+
 									*/
   if(E->control.ggrd_mat_is_code){
     /* we need code assignments */
@@ -594,37 +596,37 @@ void read_initial_settings(struct All_variables *E)
   }
   input_string("ggrd_mat_file",E->control.ggrd.mat_file,"",m); /* file to read prefactors from */
   input_string("ggrd_mat_depth_file",
-	       E->control.ggrd_mat_depth_file,"_i_do_not_exist_",m); 
+	       E->control.ggrd_mat_depth_file,"_i_do_not_exist_",m);
   if(E->control.ggrd.mat_control != 0) /* this will override mat_control setting */
     E->control.mat_control = 1;
-  /* 
-     
+  /*
+
   Surface layer Rayleigh number control, similar to above
 
   */
   input_int("ggrd_rayleigh_control",
-	    &(E->control.ggrd.ray_control),"0",m); 
+	    &(E->control.ggrd.ray_control),"0",m);
   input_string("ggrd_rayleigh_file",
 	       E->control.ggrd.ray_file,"",m); /* file to read prefactors from */
-  /* 
-     
+  /*
+
   surface velocity control, similar to material control above
-  
+
   if time-dependent, will look for ggrd_vtop_file/i/v?.grd
   if constant, will look for ggrd_vtop_file/v?.grd
 
   where vp/vt.grd are Netcdf GRD files with East and South velocities in cm/yr
-  
+
 
   */
-  input_int("ggrd_vtop_control",&(E->control.ggrd.vtop_control),"0",m); 
+  input_int("ggrd_vtop_control",&(E->control.ggrd.vtop_control),"0",m);
   input_string("ggrd_vtop_dir",E->control.ggrd.vtop_dir,"",m); /* file to read prefactors from */
 
-  /* 
-     
-  if ggrd_vtop_euler is set, will read 
+  /*
 
-  wx wy wz 
+  if ggrd_vtop_euler is set, will read
+
+  wx wy wz
 
   from E->control.ggrd.vtop_dir/rotvec.dat
 
@@ -648,7 +650,7 @@ void read_initial_settings(struct All_variables *E)
   */
   input_boolean("allow_mixed_vbcs",&(E->control.ggrd_allow_mixed_vbcs),"off",m);
 
-  /* when assigning  composition from grid file, allow values between 0 and 1 ? 
+  /* when assigning  composition from grid file, allow values between 0 and 1 ?
      default will ronud up/down to 0 or 1
   */
   input_boolean("ggrd_comp_smooth",&(E->control.ggrd_comp_smooth),"off",m);
@@ -747,12 +749,12 @@ void read_initial_settings(struct All_variables *E)
 
   input_double("ellipticity",&ell_tmp,"0.0",m);
 #ifdef ALLOW_ELLIPTICAL
-  /* 
+  /*
 
   ellipticity and rotation settings
-  
+
   */
-  /* f = (a-c)/a, where c is the short, a=b the long axis 
+  /* f = (a-c)/a, where c is the short, a=b the long axis
      1/298.257 = 0.00335281317789691 for Earth at present day
   */
   E->data.ellipticity = ell_tmp;
@@ -771,7 +773,7 @@ void read_initial_settings(struct All_variables *E)
     E->data.ra = E->data.rc = E->data.efac=1.0;
     E->data.use_ellipse = 0;
   }
-  /* 
+  /*
      centrifugal ratio between \omega^2 a^3/GM, 3.46775e-3 for the
      Earth at present day
   */
@@ -807,7 +809,7 @@ void read_initial_settings(struct All_variables *E)
   input_float("T_IBC_reset",&(E->control.T_IBC_reset),"-1.0",m);
   input_float("t_ic_sol",&(E->control.t_ic_sol),"-1.0",m);
   E->control.fco2=E->control.fco2*1e-6;
-  
+
   E->data.radius_km = E->data.radius / 1e3;
 
   E->data.therm_cond = E->data.therm_diff * E->data.density * E->data.Cp;
@@ -832,9 +834,9 @@ void read_initial_settings(struct All_variables *E)
   initial_update_cmb_T(E); //lhy update_cmb_T
 
   (E->problem_settings)(E);
-  
+
   print_all_config_parameters(E); //debug
-  
+
 
   check_settings_consistency(E);
   if(E->parallel.me==0){
@@ -891,7 +893,7 @@ void check_settings_consistency(struct All_variables *E)
         E->viscosity.zbase_layer[0] = E->viscosity.zlith;
         E->viscosity.zbase_layer[1] = E->viscosity.z410;
         E->viscosity.zbase_layer[2] = E->viscosity.zlm;
-        E->viscosity.zbase_layer[3] = E->viscosity.zcmb; /* the lowest layers is never checked, really 
+        E->viscosity.zbase_layer[3] = E->viscosity.zcmb; /* the lowest layers is never checked, really
 							    if x3 < zlm, then the last layers gets assigned
 							    i left this in for backward compatibility
 							 */
@@ -1046,7 +1048,7 @@ void allocate_common_vars(E)
   E->gstress[j] = (float *) malloc((6*nno+1)*sizeof(float));
   // TWB do we need this anymore XXX
   //E->stress[j]   = (float *) malloc((12*nsf+1)*sizeof(float));
-  
+
   for(i=1;i<=E->mesh.nsd;i++)
       E->sphere.cap[j].TB[i] = (float *)  malloc((nno+1)*sizeof(float));
 
@@ -1083,7 +1085,7 @@ void allocate_common_vars(E)
   }         /* end for cap j  */
 
   E->slice.temp = (float***)malloc((E->lmesh.noz+1)*sizeof(float**)); //20160630 lhy spectrum
-  E->slice.vr = (float***)malloc((E->lmesh.noz+1)*sizeof(float**)); 
+  E->slice.vr = (float***)malloc((E->lmesh.noz+1)*sizeof(float**));
   for(k=1;k<=E->lmesh.noz;k++){
 	  E->slice.temp[k] = (float **)malloc(E->sphere.caps_per_proc*sizeof(float*));
 	  E->slice.vr[k] = (float **)malloc(E->sphere.caps_per_proc*sizeof(float*));
@@ -1101,7 +1103,7 @@ void allocate_common_vars(E)
   E->Have.V[1]      = (float *)malloc((E->lmesh.noz+2)*sizeof(float));
   E->Have.V[2]      = (float *)malloc((E->lmesh.noz+2)*sizeof(float));
   E->Have.vis      = (float *)malloc((E->lmesh.noz+2)*sizeof(float));
-
+  E->Have.GA_Moon  = (float *)malloc((E->lmesh.noz+2)*sizeof(float)); //zwb 20201021
   E->sphere.gr = (double *)malloc((E->mesh.noz+1)*sizeof(double));
 
  for(i=E->mesh.levmin;i<=E->mesh.levmax;i++) {
@@ -1212,7 +1214,7 @@ void allocate_common_vars(E)
        E->EVIn1[i][j] = (float *) malloc((nel+1)*vpoints[E->mesh.nsd]*sizeof(float));
        E->EVIn2[i][j] = (float *) malloc((nel+1)*vpoints[E->mesh.nsd]*sizeof(float));
        E->EVIn3[i][j] = (float *) malloc((nel+1)*vpoints[E->mesh.nsd]*sizeof(float));
-       
+
        E->VI2[i][j]  = (float *)        malloc((nno+1)*sizeof(float));
        E->VIn1[i][j]  = (float *)        malloc((nno+1)*sizeof(float));
        E->VIn2[i][j]  = (float *)        malloc((nno+1)*sizeof(float));
@@ -2006,7 +2008,7 @@ void print_all_config_parameters(struct All_variables *E)
   if(E->parallel.me == 0) {
     sprintf(filename, "pid%09d", E->control.PID);
     fp = fopen(filename, "w");
-    
+
     /* CitcomS*/
     fprintf(fp, "# CitcomS\n");
     fprintf(fp, "minstep=%d\n", E->advection.min_timesteps);
@@ -2033,9 +2035,9 @@ void print_all_config_parameters(struct All_variables *E)
       tmp = 1.0/E->control.inv_gruneisen;
     fprintf(fp, "gruneisen=%g\n", tmp);
     fprintf(fp, "surfaceT=%g\n", E->control.surface_temp);
-    fprintf(fp, "Q0=%g\n", E->control.Q0); 
-    fprintf(fp, "isotope_n=%g\n", E->convection.heat_sources.number); 
-    fprintf(fp, "isotope_t=%g\n", E->convection.heat_sources.t_offset); 
+    fprintf(fp, "Q0=%g\n", E->control.Q0);
+    fprintf(fp, "isotope_n=%g\n", E->convection.heat_sources.number);
+    fprintf(fp, "isotope_t=%g\n", E->convection.heat_sources.t_offset);
 	//lhy 20180305
     fprintf(fp, "isotope_Q=");
     if(E->convection.heat_sources.number > 0)
@@ -2138,7 +2140,7 @@ void print_all_config_parameters(struct All_variables *E)
     fprintf(fp, "\n\n");
 
     fprintf(fp, "# CitcomS.solver.vsolver\n");
-    fprintf(fp, "Solver=%s\n", E->control.SOLVER_TYPE); 
+    fprintf(fp, "Solver=%s\n", E->control.SOLVER_TYPE);
     fprintf(fp, "node_assemble=%d\n", E->control.NASSEMBLE);
     fprintf(fp, "precond=%d\n", E->control.precondition);
     fprintf(fp, "accuracy=%g\n", E->control.accuracy);
@@ -2154,15 +2156,15 @@ void print_all_config_parameters(struct All_variables *E)
     fprintf(fp, "aug_lagr=%d\n", E->control.augmented_Lagr);
     fprintf(fp, "aug_number=%g\n", E->control.augmented);
     fprintf(fp, "remove_rigid_rotation=%d\n", E->control.remove_rigid_rotation);
-    fprintf(fp, "remove_angular_momentum=%d\n", 
+    fprintf(fp, "remove_angular_momentum=%d\n",
                 E->control.remove_angular_momentum);
-    fprintf(fp, "inner_accuracy_scale=%g\n", 
+    fprintf(fp, "inner_accuracy_scale=%g\n",
                 E->control.inner_accuracy_scale);
-    fprintf(fp, "check_continuity_convergence=%d\n", 
+    fprintf(fp, "check_continuity_convergence=%d\n",
                 E->control.check_continuity_convergence);
-    fprintf(fp, "check_pressure_convergence=%d\n", 
+    fprintf(fp, "check_pressure_convergence=%d\n",
                 E->control.check_pressure_convergence);
-    fprintf(fp, "inner_remove_rigid_rotation=%d\n", 
+    fprintf(fp, "inner_remove_rigid_rotation=%d\n",
                 E->control.inner_remove_rigid_rotation);
     fprintf(fp, "\n\n");
 
@@ -2183,13 +2185,13 @@ void print_all_config_parameters(struct All_variables *E)
     fprintf(fp, "depth_bound_adj=%g\n", E->control.depth_bound_adj);
     fprintf(fp, "width_bound_adj=%g\n", E->control.width_bound_adj);
     fprintf(fp, "\n\n");
-    
+
     fprintf(fp, "# CitcomS.solver.const\n");
     fprintf(fp, "radius=%g\n", E->data.radius_km*1000.0);
     fprintf(fp, "density=%g\n", E->data.density);
     fprintf(fp, "thermdiff=%g\n", E->data.therm_diff);
-    fprintf(fp, "gravacc=%g\n", E->data.grav_acc); 
-    fprintf(fp, "thermexp=%g\n", E->data.therm_exp); 
+    fprintf(fp, "gravacc=%g\n", E->data.grav_acc);
+    fprintf(fp, "thermexp=%g\n", E->data.therm_exp);
     fprintf(fp, "surf_temperature=%g\n", E->data.Tsurf); //modified by lhy
     fprintf(fp, "ref_temperature=%g\n", E->data.ref_temperature); //modified by lhy
     fprintf(fp, "refvisc=%g\n", E->data.ref_viscosity);
@@ -2237,7 +2239,7 @@ void print_all_config_parameters(struct All_variables *E)
     }
     fprintf(fp, "half_space_age=%g\n", E->convection.half_space_age);
     fprintf(fp, "mantle_temp=%g\n", E->control.mantle_temp);
-    fprintf(fp, "blob_center=[%g,%g,%g]\n", 
+    fprintf(fp, "blob_center=[%g,%g,%g]\n",
 	    E->convection.blob_center[0],
 	    E->convection.blob_center[1],
 	    E->convection.blob_center[2]);
@@ -2402,7 +2404,7 @@ void print_all_config_parameters(struct All_variables *E)
     if(E->viscosity.num_mat > 0)
     {
       for(i=0; i<E->viscosity.num_mat-1;i++)
-        fprintf(fp, "%g,", (E->viscosity.SDEPV == 0 ? 
+        fprintf(fp, "%g,", (E->viscosity.SDEPV == 0 ?
 			    1.0 : E->viscosity.sdepv_expt[i]));
       fprintf(fp, "%g\n", (E->viscosity.SDEPV == 0 ?
 			   1.0 : E->viscosity.sdepv_expt[E->viscosity.num_mat-1]));
