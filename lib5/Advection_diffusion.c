@@ -663,9 +663,12 @@ static void element_residual(struct All_variables *E, int el,
       	Q *= (1.0 - temp - temp1);
       	Q += temp * QER + temp1 * QER1;
 	 }
+
+	if(E->parallel.me==0&&el<=E->lmesh.elz)
+                fprintf(stderr,"el_down = %d, Q = %.4e\n",el, Q); //zwb 20201121 debug
 	 
 	if(E->parallel.me==1&&el<=E->lmesh.elz)
-		fprintf(stderr,"el = %d, Q = %.4e\n", el, Q); //lhy debug
+		fprintf(stderr,"el_up = %d, Q = %.4e\n",el, Q); //lhy debug
 /*	
 	if(E->parallel.me==1&&el<=E->lmesh.noz)
 		fprintf(stderr,"proc1, el: %d, Q: %.4e\n",el,Q); //lhy debug
