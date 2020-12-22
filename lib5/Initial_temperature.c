@@ -251,24 +251,6 @@ void tic_input(struct All_variables *E)
       parallel_process_termination();
 #endif
       break;
-    case -6:			/* blob */   //zwb 20201207
-        if( ! input_float_vector("blob_center", 3, E->convection.blob_center, m)) {
-    assert( E->sphere.caps == 12 || E->sphere.caps == 1 );
-    if(E->sphere.caps == 12) { /* Full version: just quit here */
-      fprintf(stderr,"Missing input parameter: 'blob_center'.\n");
-      parallel_process_termination();
-    }
-    else if(E->sphere.caps == 1) { /* Regional version: put the blob at the center */
-      fprintf(stderr,"Missing input parameter: 'blob_center'. The blob will be placed at the center of the domain.\n");
-      E->convection.blob_center[0] = 0.5*(E->control.theta_min+E->control.theta_max);
-      E->convection.blob_center[1] = 0.5*(E->control.fi_min+E->control.fi_max);
-      E->convection.blob_center[2] = 0.5*(E->sphere.ri+E->sphere.ro);
-    }
-        }
-        input_float("blob_radius", &(E->convection.blob_radius), "0.063,0.0,1.0", m);
-        input_float("blob_dT", &(E->convection.blob_dT), "0.18,nomin,nomax", m);
-        input_boolean("blob_bc_persist",&(E->convection.blob_bc_persist),"off",m);
-        break;
     } /* no default needed */
     return;
 }
@@ -335,15 +317,6 @@ void convection_initial_temperature(struct All_variables *E)
 	      E->T[m][i] = 0.0*E->T[m][i]; //changed
 	}*/
           //read_tic_from_file_im(E);
-  }
-  else if (E->convection.tic_method == -6){   //zwb 20201207
-    #ifdef USE_GZDIR
-          if(strcmp(E->output.format, "ascii-gz") == 0)
-              restart_tic_from_gzdir_file(E);
-          else
-    #endif
-    read_temp_from_radial(E);
-    add_spherical_anomaly(E);
   }
   else if (E->control.lith_age)
       lith_age_construct_tic(E);

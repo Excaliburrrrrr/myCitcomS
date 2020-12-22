@@ -596,8 +596,8 @@ void visc_from_T(E,EEta,propogate)
 						   computation of
 						   depth, not needed
 						   TWB */
-		      TT[kk]=min(max(TT[kk],zero),2.0);  //zwb 20201122
-		      temp += TT[kk] * E->N.vpt[GNVINDEX(kk,jj)]; //zwb 20201122
+		      TT[kk]=max(TT[kk],zero);
+		      temp += min(TT[kk],one) * E->N.vpt[GNVINDEX(kk,jj)];
                     }
 		    EEta[m][ (i-1)*vpts + jj ] = tempa*
 		      exp( E->viscosity.E[l]/(temp+E->viscosity.T[l])

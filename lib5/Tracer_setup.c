@@ -126,7 +126,7 @@ void tracer_input(struct All_variables *E)
 				   with only one if statement in
 				   Advection_diffusion */
 	myerror(E,"need to switch on tracers for tracer_enriched");
-      
+
       /*input_float("Q0_enriched",&(E->control.Q0ER),"0.0",m);
       snprintf(message,100,"using compositionally enriched heating: C = 0: %g C = 1: %g (only one composition!)",
 	       E->control.Q0,E->control.Q0ER);
@@ -172,10 +172,10 @@ void tracer_input(struct All_variables *E)
 		if(Is0) //lhy debug
 			fprintf(stderr,"tracer_nflavors = %d\n",E->trace.nflavors);
 
-	/* 0: default from layers 
+	/* 0: default from layers
 	   1: from netcdf grds
-	   
-	   
+
+
 	   99: from grds, overriding checkpoints during restart
 	   (1 and 99 require ggrd)
 	*/
@@ -186,7 +186,7 @@ void tracer_input(struct All_variables *E)
 
         if (E->trace.nflavors > 1) {
 	      /* default method */
-          //  case 0:			
+          //  case 0:
 	      /* flavors initialized from layers */
 			E->trace.z_interface = (double*) malloc((E->trace.nflavors-1)*sizeof(double));
             for(i=0; i<E->trace.nflavors-1; i++){
@@ -197,7 +197,7 @@ void tracer_input(struct All_variables *E)
 			input_double_vector("z_interface", E->trace.nflavors-1,E->trace.z_interface, m);
 		}
                 //break;
-		/* 
+		/*
 		   two grd init method, second will override restart
 		*/
 /*#ifdef USE_GGRD
@@ -210,7 +210,7 @@ void tracer_input(struct All_variables *E)
 //									      >0 : which top layers to use, layer <= ictracer_grd_layers
 //									      <0 : only use one layer layer == -ictracer_grd_layers
 	      //break;
-	      
+
 //#endif
  /*           default:
                 fprintf(stderr,"ic_method_for_flavors %i undefined (1 and 99 only for ggrd mode)\n",E->trace.ic_method_for_flavors);
@@ -228,7 +228,7 @@ void tracer_input(struct All_variables *E)
 
 
         composition_input(E);
-	
+
 
 
     return;
@@ -327,7 +327,7 @@ void update_melt(struct All_variables *E){
     for (j=1; j<=E->sphere.caps_per_proc; j++) {
 		numtracers = E->trace.ntracers[j];
 		for (e=1; e<=nel; e++){
-			E->melt_el[j][e] = 0.0; 
+			E->melt_el[j][e] = 0.0;
 		}
         /* Fill arrays */
         for (kk=1; kk<=numtracers; kk++) {
@@ -338,7 +338,7 @@ void update_melt(struct All_variables *E){
             y=E->trace.basicq[j][4][kk];
             z=E->trace.basicq[j][5][kk];
 			r=E->trace.basicq[j][2][kk];
-	   		F_new = melt_frac_flavor_method(E,flavor,T,r); 
+	   		F_new = melt_frac_flavor_method(E,flavor,T,r);
 	    	if(F_new>E->trace.melt[j][0][kk]){
 				E->trace.melt[j][1][kk] = F_new-E->trace.melt[j][0][kk];
 				E->trace.melt[j][0][kk] = F_new;
@@ -346,7 +346,7 @@ void update_melt(struct All_variables *E){
 	    	else{
 				E->trace.melt[j][1][kk] = 0.0;
 	    	}
-			E->melt_el[j][e] += E->trace.melt[j][1][kk]; 
+			E->melt_el[j][e] += E->trace.melt[j][1][kk];
         }
 		/*average to total tracers in an element*/
 		for (e=1; e<=nel; e++){
@@ -354,9 +354,9 @@ void update_melt(struct All_variables *E){
         	for (flavor=0; flavor<E->trace.nflavors; flavor++){
             	ele_tracers += E->trace.ntracer_flavor[j][flavor][e];
 			}
-			E->melt_el[j][e] = E->melt_el[j][e]/ele_tracers; 
+			E->melt_el[j][e] = E->melt_el[j][e]/ele_tracers;
 		}
-    }	
+    }
 	/*
 	if (E->parallel.me==0){ //debug
 		fprintf(stderr,"update_melt end\n");
@@ -816,7 +816,7 @@ void initialize_tracers(struct All_variables *E)
         fflush(E->trace.fpt);
         parallel_process_termination();
     }
-	
+
     /* total number of tracers  */
 
     E->trace.ilast_tracer_count = isum_tracers(E);
@@ -1316,7 +1316,7 @@ static int isum_tracers(struct All_variables *E)
     imycount = 0;
     for (j=1; j<=E->sphere.caps_per_proc; j++)
         imycount = imycount + E->trace.ntracers[j];
-	
+
 	//fprintf(stderr,"proc = %d, imycount = %d\n",E->parallel.me,imycount);//debug
     MPI_Allreduce(&imycount,&iallcount,1,MPI_INT,MPI_SUM,E->parallel.world);
 
@@ -1339,7 +1339,7 @@ void cart_to_sphere(struct All_variables *E,
     *rad=sqrt(temp+z*z);
     *theta=atan2(sqrt(temp),z);
     *phi=myatan(y,x);
-	
+
     return;
 }
 
@@ -1384,7 +1384,7 @@ static void init_tracer_flavors(struct All_variables *E)
 	float **comp_e;
 	const int ic_flavor = E->trace.ic_flavor;
 	const double ic_inter =  E->chemical.interface[ic_flavor][1];
-	const double ic_thick = E->chemical.interface[ic_flavor][2] 
+	const double ic_thick = E->chemical.interface[ic_flavor][2]
 								- E->chemical.interface[ic_flavor][1];
 	const double t_scale = pow(E->data.radius,2.0)/E->data.therm_diff/(365*24*3600*1e6);
 	if(Is0){
@@ -1405,7 +1405,7 @@ static void init_tracer_flavors(struct All_variables *E)
           //flavor = E->trace.nflavors - 1;
           flavor = 0; //modified by lhy
 
-          //for (i=0; i<E->trace.nflavors-1; i++) 
+          //for (i=0; i<E->trace.nflavors-1; i++)
           for (i=1; i<E->trace.nflavors; i++) { //modified by lhy
 			  switch(E->trace.flavor_method){ //lhy 170918 for new flavor method
               case 0:
@@ -1413,11 +1413,11 @@ static void init_tracer_flavors(struct All_variables *E)
                   flavor = i; //lhy for intermediate layer
 			  break;
 			  case 1:
-			  if (rad > E->trace.z_interface[i-1]) 
+			  if (rad > E->trace.z_interface[i-1])
                   flavor = i; //lhy for intermediate layer
               break;
 			  case 2:
-			  if (rad < E->trace.z_interface[i-1]) 
+			  if (rad < E->trace.z_interface[i-1])
                   flavor = i; //lhy for intermediate layer
 			  break;
 			  case 3:
@@ -1496,7 +1496,7 @@ static void init_tracer_flavors(struct All_variables *E)
       fprintf(stderr,"ic_method_for_flavors %i undefined\n",E->trace.ic_method_for_flavors);
       parallel_process_termination();
       break;
-	}	
+	}
     return;
 }
 
@@ -2009,8 +2009,8 @@ int icheck_that_processor_shell(struct All_variables *E,
  * read in composition from a file*/
 void read_chemicals_from_files(struct All_variables *E, float **comp_e, int *nf_comp)
 {
-	const int fncomp = 4;	
-	const int ncomp = E->composition.ncomp;	
+	const int fncomp = 4;
+	const int ncomp = E->composition.ncomp;
     const int vpts = vpoints[E->mesh.nsd];
     const int ends = enodes[E->mesh.nsd];
 	int i,j,k,el,n,m,ll,mm,fj;
@@ -2072,7 +2072,7 @@ void read_chemicals_from_files(struct All_variables *E, float **comp_e, int *nf_
         }
 		comp_e[k][el] = integral1/volume1;
 	}
-  
+
 	for(i=0;i<=ncomp;i++){
 		free(comp_d[i]);
 	}
@@ -2162,8 +2162,8 @@ if(Is0){
 	fprintf(stderr,"time_scale=%.4e, velocity_scale=%.4e\n",time_scale,velocity_scale);
 } //lhy debug
 #endif
-dt=time_scale*E->advection.dt_before;
-F_inf=E->control.F_inf;
+dt=time_scale*E->advection.dt_before; // E->advection.timestep 1101
+F_inf=E->control.F_inf;  //melt_inf
 if(E->control.melting_model==4){
 	Ts=E->sol[1];
 	Tl=E->liq[1];
@@ -2176,7 +2176,7 @@ Fout_el_tracer1=malloc((E->lmesh.nel+1)*sizeof(float));
 CO2_el_tracer=malloc((E->lmesh.nel+1)*sizeof(float));
 dFdt_el_tracer_flavored=(float**)malloc((nflavors)*sizeof(float*));
 for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-	dFdt_el_tracer_flavored[flavor]=(float*)malloc((E->lmesh.nel+1)*sizeof(float)); 
+	dFdt_el_tracer_flavored[flavor]=(float*)malloc((E->lmesh.nel+1)*sizeof(float));
 }
 dFdt_el_tracer=malloc((E->lmesh.nel+1)*sizeof(float));
 dCO2dt_el_tracer=malloc((E->lmesh.nel+1)*sizeof(float));
@@ -2185,7 +2185,7 @@ velocity=malloc((E->lmesh.nel+1)*sizeof(float));
 NT=malloc((E->lmesh.nel+1)*sizeof(int));
 MFsurf_tracer_flavored=(float**)malloc((nflavors)*sizeof(float*));
 for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-	MFsurf_tracer_flavored[flavor]=(float*)malloc((E->lmesh.elx*E->lmesh.ely+1)*sizeof(float)); 
+	MFsurf_tracer_flavored[flavor]=(float*)malloc((E->lmesh.elx*E->lmesh.ely+1)*sizeof(float));
 }
 MFsurf_tracer=malloc((E->lmesh.elx*E->lmesh.ely+1)*sizeof(float));
 CO2_tracer=malloc((E->lmesh.elx*E->lmesh.ely+1)*sizeof(float));
@@ -2220,7 +2220,7 @@ for(iel=1;iel<=E->lmesh.nel;iel++)
 for(i=1;i<=E->lmesh.elx*E->lmesh.ely;i++)
 {
 	for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-		MFsurf_tracer_flavored[flavor][i]=0.0; 
+		MFsurf_tracer_flavored[flavor][i]=0.0;
 	}
 	MFsurf_tracer[i]=MFsurf_euler[i]=0.0;
 	CO2_tracer[i]=0.0;
@@ -2253,7 +2253,7 @@ if(been_here==0)
 		}
 	}
 
-	
+
 	if(E->control.restart==0)
 	{
 		for(itracer=1;itracer<=number_of_tracers;itracer++)
@@ -2405,7 +2405,7 @@ for(ielz=1;ielz<=E->lmesh.elz;ielz++)
 		dCO2dt_el_tracer[el]=0.0;
 	}
 	else
-	{	
+	{
 		for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
 			dFdt_el_tracer_flavored[flavor][el]=Fout_el_tracer_flavored[flavor][el]/dt;
 		}
@@ -2543,7 +2543,7 @@ for(ielx=1;ielx<=E->lmesh.elx;ielx++)
 			MFtotal_euler=MFtotal_euler+dFdt_el_euler[el]*volume;
 		}
 		for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-			MFsurf_tracer_flavored[flavor][i]=MFsurf_tracer_flavored[flavor][i]+dFdt_el_tracer_flavored[flavor][el]*volume; 
+			MFsurf_tracer_flavored[flavor][i]=MFsurf_tracer_flavored[flavor][i]+dFdt_el_tracer_flavored[flavor][el]*volume;
 		}
 		MFsurf_tracer[i]=MFsurf_tracer[i]+dFdt_el_tracer[el]*volume;
 		if(Is0&&i==1){
@@ -2716,16 +2716,16 @@ if(E->monitor.solution_cycles % E->control.MF_save_step == 0)
 }
 
 for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-	free(Fout_el_tracer_flavored[flavor]); 
+	free(Fout_el_tracer_flavored[flavor]);
 }
 free(Fout_el_tracer_flavored);
 Fout_el_tracer=malloc((E->lmesh.nel+1)*sizeof(float));
 for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-	free(dFdt_el_tracer_flavored[flavor]); 
+	free(dFdt_el_tracer_flavored[flavor]);
 }
 free(dFdt_el_tracer_flavored);
 for (flavor=0; flavor<nflavors; flavor++) { //modified by lhy
-	free(MFsurf_tracer_flavored[flavor]); 
+	free(MFsurf_tracer_flavored[flavor]);
 }
 free(MFsurf_tracer_flavored);
 free(MFtotal_tracer_flavored);
@@ -3053,7 +3053,7 @@ float deltaT;
 float F_cal;
 float Fopx,Fopx_cal;
 char ch;
-Tsol = A1+P*(A2+P*A3); // in oC 
+Tsol = A1+P*(A2+P*A3); // in oC
 Tlhl = B1+P*(B2+P*B3);
 Tliq = C1+P*(C2+P*C3);
 
@@ -3228,7 +3228,7 @@ static float kelley_wetmelting(float T, float P, float water, float Mcpx, int fe
         if (F > Fcpxout)
         {
 
-                Tsol = A1+P*(A2+P*A3); // in oC 
+                Tsol = A1+P*(A2+P*A3); // in oC
                 Tlhl = B1+P*(B2+P*B3);
                 Tliq = C1+P*(C2+P*C3);
 
@@ -3267,7 +3267,7 @@ static float kelley_wetmelting(float T, float P, float water, float Mcpx, int fe
                         }
                         F=0.5*(startF+endF);
                 }while(fabs(error)>1e-7 && fabs(startF-endF)>1e-7);
-        }        
+        }
 return F;
 }
 
@@ -3474,7 +3474,7 @@ static void correct_ic_sol(struct All_variables *E)
 	const int Is1 = (E->parallel.me==1);
 	const int nflavors = E->trace.nflavors;
 	const double ic_inter =  E->chemical.interface[ic_flavor][1];
-	const double ic_thick = E->chemical.interface[ic_flavor][2] 
+	const double ic_thick = E->chemical.interface[ic_flavor][2]
 								- E->chemical.interface[ic_flavor][1];
 	int kk;
 	double t_model;
