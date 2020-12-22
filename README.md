@@ -7,3 +7,4 @@
 - lib4 add init_zinterface,mixed_fraction and dropped_fraction,enabling model_type3,flavor_method3,tic_method-2 and Q0_enriched1
 - lib5 modify read_tic_from_file(temperature upper limit), tic_method=-2(change add_perturbations_at_all_layers to add_perturbations_at_layers) & add generation of a.coord files
 - lib3 &lib5 add linear gravitational acceleration 
+- lib5 add blob perturbation (tic_method=-6)
